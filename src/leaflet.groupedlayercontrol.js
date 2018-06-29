@@ -156,6 +156,8 @@ L.Control.GroupedLayers = L.Control.extend({
       this._lastZIndex++;
       layer.setZIndex(this._lastZIndex);
     }
+
+    this._expandIfNotCollapsed();
   },
 
   _update: function () {
@@ -347,12 +349,23 @@ L.Control.GroupedLayers = L.Control.extend({
 
   _expand: function () {
     L.DomUtil.addClass(this._container, 'leaflet-control-layers-expanded');
-    // permits to have a scrollbar if overlays heighter than the map.
-    var acceptableHeight = this._map._size.y - (this._container.offsetTop * 4);
+    this._form.style.height = null;
+    var acceptableHeight = this._map._size.y - (this._container.offsetTop + 50);
     if (acceptableHeight < this._form.clientHeight) {
       L.DomUtil.addClass(this._form, 'leaflet-control-layers-scrollbar');
       this._form.style.height = acceptableHeight + 'px';
+    } else {
+      L.DomUtil.removeClass(this._form, 'leaflet-control-layers-scrollbar');
     }
+
+    return this;
+  },
+
+  _expandIfNotCollapsed: function () {
+    if (this._map && !this.options.collapsed) {
+      this._expand();
+    }
+    return this;
   },
 
   _collapse: function () {
